@@ -64,7 +64,7 @@ RSpec.shared_context :activerecord do
 
     unless ActiveRecord::Base.connected?
       ActiveRecord::Base.establish_connection(
-        YAML.load(ERB.new(File.read("./spec/featuring/persistence/activerecord/database.yml")).result)["test"]
+        ENV["DATABASE_URL"]
       )
     end
   end

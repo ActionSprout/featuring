@@ -477,3 +477,12 @@ end
   some_complex_feature: true
 }
 ```
+
+### Contributing
+
+Running the tests:
+
+```
+docker-compose build
+docker-compose run --rm tests "bundle exec rspec"
+```
