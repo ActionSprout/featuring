@@ -59,8 +59,8 @@ RSpec.describe "persisting multiple feature flags on an activerecord model" do
     end
 
     it "updates the flags at once" do
-      expect(feature_flag_model_connection).to have_received(:execute).with(
-        "UPDATE \"feature_flags\" SET metadata = metadata || '{\"foo\":true,\"bar\":false,\"baz\":true,\"qux\":false,\"quux\":true}' WHERE \"feature_flags\".\"flaggable_type\" = 'ModelWithFeatures' AND \"feature_flags\".\"flaggable_id\" = 123"
+      expect(feature_flag_dataset).to have_received(:update_all).with(
+        "metadata = metadata || '{\"foo\":true,\"bar\":false,\"baz\":true,\"qux\":false,\"quux\":true}'"
       )
     end
   end

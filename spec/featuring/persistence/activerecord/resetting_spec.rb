@@ -39,8 +39,8 @@ RSpec.describe "resetting the value for a feature flag on an activerecord model"
     end
 
     it "removes the persisted value with an update" do
-      expect(feature_flag_model_connection).to have_received(:execute).with(
-        "UPDATE \"feature_flags\" SET metadata = metadata || '{\"another_feature\":false}' WHERE \"feature_flags\".\"flaggable_type\" = 'ModelWithFeatures' AND \"feature_flags\".\"flaggable_id\" = 123"
+      expect(feature_flag_dataset).to have_received(:update_all).with(
+        "metadata = metadata || '{\"another_feature\":false}'"
       )
     end
   end
