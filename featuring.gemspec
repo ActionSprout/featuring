@@ -13,7 +13,7 @@ Gem::Specification.new do |spec|
   spec.homepage      = "https://github.com/ActionSprout/featuring"
   spec.license       = "MIT"
 
-  spec.required_ruby_version = '>= 2.4.9'
+  spec.required_ruby_version = '>= 2.4.6'
 
   root_files = %w[
     featuring.gemspec
