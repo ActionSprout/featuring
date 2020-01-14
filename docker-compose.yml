@@ -1,0 +1,15 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:9.6
+    environment:
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: ''
+
+  tests:
+    build:
+      context: ./
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: postgres://postgres@postgres/
