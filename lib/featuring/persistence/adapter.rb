@@ -110,7 +110,7 @@ module Featuring
         #   => true
         #
         def set(feature, value)
-          create_or_update_feature_flags(feature => !!value)
+          create_or_update_feature_flags(feature.to_sym => !!value)
         end
 
         # Enables a feature flag.
@@ -128,7 +128,7 @@ module Featuring
         #   => true
         #
         def enable(feature)
-          create_or_update_feature_flags(feature => true)
+          create_or_update_feature_flags(feature.to_sym => true)
         end
 
         # Disables a feature flag.
@@ -146,7 +146,7 @@ module Featuring
         #   => false
         #
         def disable(feature)
-          create_or_update_feature_flags(feature => false)
+          create_or_update_feature_flags(feature.to_sym => false)
         end
 
         # Reloads feature flag values for the object.

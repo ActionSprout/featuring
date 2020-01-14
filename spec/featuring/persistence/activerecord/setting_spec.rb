@@ -47,8 +47,8 @@ RSpec.describe "setting a feature flag on an activerecord model" do
     end
 
     it "sets by updating the existing feature flag record" do
-      expect(feature_flag_model_connection).to have_received(:execute).with(
-        "UPDATE \"feature_flags\" SET metadata = metadata || '{\"some_feature\":true}' WHERE \"feature_flags\".\"flaggable_type\" = 'ModelWithFeatures' AND \"feature_flags\".\"flaggable_id\" = 123"
+      expect(feature_flag_dataset).to have_received(:update_all).with(
+        "metadata = metadata || '{\"some_feature\":true}'"
       )
     end
   end
@@ -65,8 +65,8 @@ RSpec.describe "setting a feature flag on an activerecord model" do
     end
 
     it "sets by updating the existing feature flag record" do
-      expect(feature_flag_model_connection).to have_received(:execute).with(
-        "UPDATE \"feature_flags\" SET metadata = metadata || '{\"some_feature\":true}' WHERE \"feature_flags\".\"flaggable_type\" = 'ModelWithFeatures' AND \"feature_flags\".\"flaggable_id\" = 123"
+      expect(feature_flag_dataset).to have_received(:update_all).with(
+        "metadata = metadata || '{\"some_feature\":true}'"
       )
     end
   end

@@ -58,17 +58,10 @@ module Featuring
 
         # @api private
         def update(target, **features)
-          target.feature_flag_model.connection.execute(build_update_sql(target.feature_flag_model.table_name, target, **features))
-        end
-
-        private def build_update_sql(table_name, target, **features)
-          table = Arel::Table.new(table_name)
-          update = Arel::UpdateManager.new(table.engine)
-          update.table(table)
-          update.set(Arel::Nodes::SqlLiteral.new("metadata = metadata || '#{features.to_json}'"))
-          update.where(table[:flaggable_type].eq(target.class))
-          update.where(table[:flaggable_id].eq(target.id))
-          update.to_sql
+          target.feature_flag_model.where(
+            flaggable_type: target.class.name,
+            flaggable_id: target.id,
+          ).update_all("metadata = metadata || '#{features.to_json}'")
         end
       end
     end

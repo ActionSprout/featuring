@@ -9,15 +9,15 @@ RSpec.shared_context :activerecord do
   let!(:feature_flag_model) {
     feature_flag_model = Class.new do
       def self.find_by(*); end
-
-      def self.table_name
-        "feature_flags"
-      end
     end
 
     stub_const "FeatureFlag", feature_flag_model
 
     feature_flag_model
+  }
+
+  let(:feature_flag_dataset) {
+    double(:feature_flag_dataset)
   }
 
   let(:features) {
@@ -64,9 +64,16 @@ RSpec.shared_context :activerecord do
 
     unless ActiveRecord::Base.connected?
       ActiveRecord::Base.establish_connection(
-        ENV["DATABASE_URL"]
+        ENV["DATABASE_URL"] || "postgres://postgres@localhost/"
       )
     end
+
+    allow(feature_flag_model).to receive(:where).with(
+      flaggable_type: 'ModelWithFeatures',
+      flaggable_id: 123,
+    ).and_return(feature_flag_dataset)
+
+    allow(feature_flag_dataset).to receive(:update_all)
   end
 end
 
