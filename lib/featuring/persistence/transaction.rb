@@ -40,7 +40,7 @@ module Featuring
       # See {Featuring::Persistence::Adapter::Methods#persist}
       #
       def persist(feature, *args)
-        @values[feature.to_sym] = @features.public_send(:"#{feature}?", *args)
+        @values[feature.to_sym] = @features.fetch_feature_flag_value(feature, *args, raw: true)
       end
 
       # Sets the value for a feature flag within a transaction.

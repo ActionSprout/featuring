@@ -68,7 +68,7 @@ module Featuring
         #   => false
         #
         def persist(feature, *args)
-          create_or_update_feature_flags(feature => public_send(:"#{feature}?", *args))
+          create_or_update_feature_flags(feature => fetch_feature_flag_value(feature, *args, raw: true))
         end
 
         # Ensures that a feature flag is *not* persisted, falling back to its default value.
@@ -228,15 +228,15 @@ module Featuring
         end
 
         # @api private
-        def fetch_feature_flag_value(name, *args)
-          if persisted?(name)
+        def fetch_feature_flag_value(name, *args, raw: false)
+          if !raw && persisted?(name)
             if feature_flag_has_block?(name)
-              persisted(name) && super
+              persisted(name) && super(name, *args)
             else
               persisted(name)
             end
           else
-            super
+            super(name, *args)
           end
         end
 

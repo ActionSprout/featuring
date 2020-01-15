@@ -57,6 +57,17 @@ RSpec.describe "persisting multiple feature flags on an activerecord model" do
   context "feature flag is already set" do
     include_context :existing_feature_flag
 
+    let(:existing_feature_flag_metadata) {
+      {
+        foo: false,
+        bar: true,
+        baz: false,
+        qux: true,
+        quux: false,
+        corge: true
+      }
+    }
+
     before do
       perform
     end
