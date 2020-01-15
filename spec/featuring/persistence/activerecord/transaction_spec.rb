@@ -10,7 +10,7 @@ RSpec.describe "persisting multiple feature flags on an activerecord model" do
       extend Featuring::Declarable
       feature :foo
       feature :bar
-      feature :baz do |value|
+      feature :baz do |value = nil|
         value == :baz
       end
       feature :qux
@@ -76,6 +76,15 @@ RSpec.describe "persisting multiple feature flags on an activerecord model" do
       expect(feature_flag_dataset).to have_received(:update_all).with(
         "metadata = '{\"foo\":true,\"bar\":false,\"baz\":true,\"qux\":false,\"quux\":true}'"
       )
+    end
+
+    it "updates the local values" do
+      expect(instance.features.foo?).to be(true)
+      expect(instance.features.bar?).to be(false)
+      expect(instance.features.baz?).to be(true)
+      expect(instance.features.qux?).to be(false)
+      expect(instance.features.quux?).to be(true)
+      expect(instance.features.corge?).to be(false)
     end
   end
 end

@@ -222,6 +222,14 @@ module Featuring
             features.each do |feature, value|
               persisted_flags[feature] = value
             end
+
+            # Remove local feature flags if no longer present.
+            #
+            persisted_flags.each_key do |feature|
+              unless features.include?(feature.to_sym)
+                persisted_flags.delete(feature)
+              end
+            end
           else
             feature_flag_adapter.create(@parent, **features)
           end
