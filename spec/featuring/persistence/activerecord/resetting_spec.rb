@@ -34,14 +34,25 @@ RSpec.describe "resetting the value for a feature flag on an activerecord model"
       { some_feature: true, another_feature: false }
     }
 
+    let(:features) {
+      Module.new do
+        extend Featuring::Declarable
+        feature :some_feature, false
+      end
+    }
+
     before do
       instance.features.reset :some_feature
     end
 
     it "removes the persisted value with an update" do
       expect(feature_flag_dataset).to have_received(:update_all).with(
-        "metadata = metadata || '{\"another_feature\":false}'"
+        "metadata = '{\"another_feature\":false}'"
       )
+    end
+
+    it "updates the local values" do
+      expect(instance.features.some_feature?).to be(false)
     end
   end
 end

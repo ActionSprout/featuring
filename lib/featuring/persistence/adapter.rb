@@ -17,6 +17,8 @@ module Featuring
     #
     #   3. `update`: Updates feature flags for a given object.
     #
+    #   4. `replace`: Replaces feature flags for a given object.
+    #
     # See {Featuring::Persistence::ActiveRecord} for a complete example.
     #
     module Adapter
@@ -91,7 +93,7 @@ module Featuring
           if persisted?(feature)
             features = persisted_flags
             features.delete(feature)
-            feature_flag_adapter.update(@parent, **features.symbolize_keys)
+            feature_flag_adapter.replace(@parent, **features.symbolize_keys)
           end
         end
 
