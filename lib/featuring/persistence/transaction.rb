@@ -66,6 +66,14 @@ module Featuring
       def disable(feature)
         @values[feature.to_sym] = false
       end
+
+      # Resets a feature flag.
+      #
+      # See {Featuring::Persistence::Adapter::Methods#reset}
+      #
+      def reset(feature)
+        @values.delete(feature.to_sym)
+      end
     end
   end
 end

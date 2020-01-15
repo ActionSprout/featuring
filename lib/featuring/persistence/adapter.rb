@@ -164,7 +164,7 @@ module Featuring
         def transaction
           transaction = Transaction.new(self)
           yield transaction
-          create_or_update_feature_flags(**transaction.values)
+          create_or_update_feature_flags(__perform: :replace, **transaction.values)
         end
 
         # Returns `true` if the feature flag is persisted, optionally with the specified value.
@@ -213,9 +213,9 @@ module Featuring
           end
         end
 
-        private def create_or_update_feature_flags(**features)
+        private def create_or_update_feature_flags(__perform: :update, **features)
           if persisted?
-            feature_flag_adapter.update(@parent, **features)
+            feature_flag_adapter.public_send(__perform, @parent, **features)
 
             # Update the local persisted values to match.
             #

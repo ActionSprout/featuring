@@ -15,6 +15,7 @@ RSpec.describe "persisting multiple feature flags on an activerecord model" do
       end
       feature :qux
       feature :quux
+      feature :corge
     end
   }
 
@@ -25,6 +26,8 @@ RSpec.describe "persisting multiple feature flags on an activerecord model" do
       features.persist :baz, :baz
       features.disable :qux
       features.enable :quux
+      features.set :corge, true
+      features.reset :corge
     end
   end
 
@@ -60,7 +63,7 @@ RSpec.describe "persisting multiple feature flags on an activerecord model" do
 
     it "updates the flags at once" do
       expect(feature_flag_dataset).to have_received(:update_all).with(
-        "metadata = metadata || '{\"foo\":true,\"bar\":false,\"baz\":true,\"qux\":false,\"quux\":true}'"
+        "metadata = '{\"foo\":true,\"bar\":false,\"baz\":true,\"qux\":false,\"quux\":true}'"
       )
     end
   end
