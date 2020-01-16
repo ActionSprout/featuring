@@ -58,10 +58,19 @@ module Featuring
 
         # @api private
         def update(target, **features)
+          scoped_dataset(target).update_all("metadata = metadata || '#{features.to_json}'")
+        end
+
+        # @api private
+        def replace(target, **features)
+          scoped_dataset(target).update_all("metadata = '#{features.to_json}'")
+        end
+
+        private def scoped_dataset(target)
           target.feature_flag_model.where(
             flaggable_type: target.class.name,
             flaggable_id: target.id,
-          ).update_all("metadata = metadata || '#{features.to_json}'")
+          )
         end
       end
     end

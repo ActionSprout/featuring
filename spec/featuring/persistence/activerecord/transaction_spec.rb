@@ -10,11 +10,12 @@ RSpec.describe "persisting multiple feature flags on an activerecord model" do
       extend Featuring::Declarable
       feature :foo
       feature :bar
-      feature :baz do |value|
+      feature :baz do |value = nil|
         value == :baz
       end
       feature :qux
       feature :quux
+      feature :corge
     end
   }
 
@@ -25,6 +26,8 @@ RSpec.describe "persisting multiple feature flags on an activerecord model" do
       features.persist :baz, :baz
       features.disable :qux
       features.enable :quux
+      features.set :corge, true
+      features.reset :corge
     end
   end
 
@@ -54,14 +57,34 @@ RSpec.describe "persisting multiple feature flags on an activerecord model" do
   context "feature flag is already set" do
     include_context :existing_feature_flag
 
+    let(:existing_feature_flag_metadata) {
+      {
+        foo: false,
+        bar: true,
+        baz: false,
+        qux: true,
+        quux: false,
+        corge: true
+      }
+    }
+
     before do
       perform
     end
 
     it "updates the flags at once" do
       expect(feature_flag_dataset).to have_received(:update_all).with(
-        "metadata = metadata || '{\"foo\":true,\"bar\":false,\"baz\":true,\"qux\":false,\"quux\":true}'"
+        "metadata = '{\"foo\":true,\"bar\":false,\"baz\":true,\"qux\":false,\"quux\":true}'"
       )
+    end
+
+    it "updates the local values" do
+      expect(instance.features.foo?).to be(true)
+      expect(instance.features.bar?).to be(false)
+      expect(instance.features.baz?).to be(true)
+      expect(instance.features.qux?).to be(false)
+      expect(instance.features.quux?).to be(true)
+      expect(instance.features.corge?).to be(false)
     end
   end
 end

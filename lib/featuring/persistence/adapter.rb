@@ -17,6 +17,8 @@ module Featuring
     #
     #   3. `update`: Updates feature flags for a given object.
     #
+    #   4. `replace`: Replaces feature flags for a given object.
+    #
     # See {Featuring::Persistence::ActiveRecord} for a complete example.
     #
     module Adapter
@@ -66,7 +68,7 @@ module Featuring
         #   => false
         #
         def persist(feature, *args)
-          create_or_update_feature_flags(feature => public_send(:"#{feature}?", *args))
+          create_or_update_feature_flags(feature => fetch_feature_flag_value(feature, *args, raw: true))
         end
 
         # Ensures that a feature flag is *not* persisted, falling back to its default value.
@@ -91,7 +93,7 @@ module Featuring
           if persisted?(feature)
             features = persisted_flags
             features.delete(feature)
-            feature_flag_adapter.update(@parent, **features.symbolize_keys)
+            feature_flag_adapter.replace(@parent, **features.symbolize_keys)
           end
         end
 
@@ -162,7 +164,7 @@ module Featuring
         def transaction
           transaction = Transaction.new(self)
           yield transaction
-          create_or_update_feature_flags(**transaction.values)
+          create_or_update_feature_flags(__perform: :replace, **transaction.values)
         end
 
         # Returns `true` if the feature flag is persisted, optionally with the specified value.
@@ -211,14 +213,22 @@ module Featuring
           end
         end
 
-        private def create_or_update_feature_flags(**features)
+        private def create_or_update_feature_flags(__perform: :update, **features)
           if persisted?
-            feature_flag_adapter.update(@parent, **features)
+            feature_flag_adapter.public_send(__perform, @parent, **features)
 
             # Update the local persisted values to match.
             #
             features.each do |feature, value|
               persisted_flags[feature] = value
+            end
+
+            # Remove local feature flags if no longer present.
+            #
+            persisted_flags.each_key do |feature|
+              unless features.include?(feature.to_sym)
+                persisted_flags.delete(feature)
+              end
             end
           else
             feature_flag_adapter.create(@parent, **features)
@@ -226,15 +236,15 @@ module Featuring
         end
 
         # @api private
-        def fetch_feature_flag_value(name, *args)
-          if persisted?(name)
+        def fetch_feature_flag_value(name, *args, raw: false)
+          if !raw && persisted?(name)
             if feature_flag_has_block?(name)
-              persisted(name) && super
+              persisted(name) && super(name, *args)
             else
               persisted(name)
             end
           else
-            super
+            super(name, *args)
           end
         end
 
